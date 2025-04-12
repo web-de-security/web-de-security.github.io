@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,28 +10,50 @@
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
     }
+
     /* Cookie-Popup-Container */
     #cookie-popup {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.85);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ff0000;
       color: #fff;
-      padding: 20px;
+      padding: 30px 20px;
       text-align: center;
       z-index: 1000;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      animation: pulse 1.5s infinite;
+      border-radius: 10px;
+      max-width: 90%;
     }
+
     #cookie-popup button {
-      margin-left: 15px;
-      padding: 10px 20px;
-      background-color: #4CAF50;
+      margin-top: 20px;
+      padding: 15px 30px;
+      background-color: #00ff00;
       border: none;
-      color: #fff;
-      font-size: 16px;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 8px;
+      transition: transform 0.2s ease, background-color 0.3s ease;
     }
+
+    #cookie-popup button:hover {
+      background-color: #00cc00;
+      transform: scale(1.1);
+    }
+
+    @keyframes pulse {
+      0% { background-color: #ff0000; }
+      50% { background-color: #cc0000; }
+      100% { background-color: #ff0000; }
+    }
+
     /* Video-Container: zunächst verborgen */
     #video-container {
       display: none;
@@ -46,6 +68,7 @@
       justify-content: center;
       align-items: center;
     }
+
     /* Video-Styling */
     video {
       max-width: 90%;
@@ -57,30 +80,28 @@
 
   <!-- Cookie Popup -->
   <div id="cookie-popup">
-    Diese Website verwendet Cookies. Mit Klick auf "Akzeptieren" stimmen Sie der Verwendung von Cookies zu.
-    <button id="accept-btn">Akzeptieren</button>
+    This website does NOT use cookies or track you :) <br>
+	You're Welcome <3 <br>
+    Click "Accept" to continue using the site.
+    <br>
+    <button id="accept-btn">Accept</button>
   </div>
 
-  <!-- Video Container (versteckt, bis der Benutzer akzeptiert) -->
+  <!-- Video Container (hidden until user accepts) -->
   <div id="video-container">
     <video id="play">
       <source src="https://github.com/truelockmc/Discord-RAT/raw/refs/heads/main/RickRoll.mp4" type="video/mp4">
-      Ihr Browser unterstützt das Videoelement nicht.
+      Your browser does not support the video tag.
     </video>
   </div>
 
   <script>
     document.getElementById('accept-btn').addEventListener('click', function() {
-      // Cookie-Popup ausblenden
       document.getElementById('cookie-popup').style.display = 'none';
-      
-      // Video-Container einblenden
       document.getElementById('video-container').style.display = 'flex';
-      
-      // Video-Element holen und abspielen
       var videoElement = document.getElementById('play');
       videoElement.play().catch(function(error) {
-        console.error("Autoplay konnte nicht gestartet werden: ", error);
+        console.error("Autoplay failed: ", error);
       });
     });
   </script>
