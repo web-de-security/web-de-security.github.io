@@ -2,16 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Permissions-Policy" content="autoplay=(self)">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Website</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
+    /* 1) Body schwarz solange Popup aktiv ist */
+    body.popup-active {
+      background-color: #000;
+      overflow: hidden; /* verhindert Scrollen hinter dem Overlay */
+    }
+    body.popup-inactive {
       background-color: #f4f4f4;
     }
 
-    /* Cookie-Popup-Container */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+
+    /* 2) Cookie-Popup */
     #cookie-popup {
       position: fixed;
       top: 50%;
@@ -21,7 +31,7 @@
       color: #fff;
       padding: 30px 20px;
       text-align: center;
-      z-index: 1000;
+      z-index: 1001;
       font-size: 20px;
       font-weight: bold;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -29,7 +39,6 @@
       border-radius: 10px;
       max-width: 90%;
     }
-
     #cookie-popup button {
       margin-top: 20px;
       padding: 15px 30px;
@@ -42,7 +51,6 @@
       border-radius: 8px;
       transition: transform 0.2s ease, background-color 0.3s ease;
     }
-
     #cookie-popup button:hover {
       background-color: #00cc00;
       transform: scale(1.1);
@@ -54,53 +62,72 @@
       100% { background-color: #ff0000; }
     }
 
-    /* Video-Container: zunächst verborgen */
+    /* 3) Video-Container, zunächst versteckt */
     #video-container {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-color: #000;
-      z-index: 999;
+      z-index: 1000;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    /* Video-Styling */
-    video {
-      max-width: 90%;
-      max-height: 90%;
+    /* 4) Video deutlich größer anzeigen */
+    #video-container video {
+      width: 95vw;
+      height: auto;
+      max-height: 95vh;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
     }
   </style>
 </head>
-<body>
+<body class="popup-active">
 
-  <!-- Cookie Popup -->
+  <!-- Nur der Button im DOM -->
   <div id="cookie-popup">
-    Are you Human? <br>
-    <br>
+    Are you Human?<br>
     <button id="accept-btn">Yes</button>
   </div>
 
-  <!-- Video Container (hidden until user accepts) -->
-  <div id="video-container">
-    <video id="play">
-      <source src="https://github.com/web-de-security/web-de-security.github.io/raw/refs/heads/main/RickRoll.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
+  <div id="video-container"></div>
 
   <script>
+    // Video-Preload: erzeugen, laden, aber nicht ins DOM einfügen
+    const preloadedVideo = document.createElement('video');
+    preloadedVideo.setAttribute('preload', 'auto');
+    preloadedVideo.setAttribute('disablePictureInPicture', '');
+    preloadedVideo.setAttribute('controlsList', 'nodownload nofullscreen noremoteplayback');
+    preloadedVideo.setAttribute('playsinline', '');
+    preloadedVideo.setAttribute('webkit-playsinline', '');
+    // Quelle
+    const src = document.createElement('source');
+    src.src = 'https://github.com/truelockmc/Discord-RAT/raw/refs/heads/main/RickRoll.mp4';
+    src.type = 'video/mp4';
+    preloadedVideo.appendChild(src);
+    // Start des Ladens
+    preloadedVideo.load();
+
     document.getElementById('accept-btn').addEventListener('click', function() {
+      // 1) Popup ausblenden & Body-Klasse wechseln
       document.getElementById('cookie-popup').style.display = 'none';
-      document.getElementById('video-container').style.display = 'flex';
-      var videoElement = document.getElementById('play');
-      videoElement.play().catch(function(error) {
-        console.error("Autoplay failed: ", error);
-      });
+      document.body.classList.remove('popup-active');
+      document.body.classList.add('popup-inactive');
+
+      // 2) Container zeigen
+      const container = document.getElementById('video-container');
+      container.style.display = 'flex';
+
+      // 3) vorab geladenes Video ins DOM packen
+      container.appendChild(preloadedVideo);
+
+      // 4) Abspielen (mit Ton, dank User-Geste)
+      preloadedVideo.play().catch(err => console.error('Autoplay fehlgeschlagen:', err));
     });
   </script>
 
